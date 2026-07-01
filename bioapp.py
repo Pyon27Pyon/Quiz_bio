@@ -63,4 +63,89 @@ if 'questions' not in st.session_state:
         {"text": "グリシン、グルタミンおよび【  】の3つのアミノ酸がプリン塩基の環構造の材料となる。", "answer": "アスパラギン酸"},
         {"text": "【  】の de novo 合成では塩基が合成されたのちにリボースと結合する。", "answer": "ピリミジン"},
         {"text": "HPRT (HGPRT)はグアニル酸(GMP)と【  】の合成を触媒する。", "answer": "イノシン酸(IMP)"},
-        {"text": "5-フルオロウラシルは体内で代謝され、その産物が【  】と拮抗することでチミジル酸(TMP)
+        {"text": "5-フルオロウラシルは体内で代謝され、その産物が【  】と拮抗することでチミジル酸(TMP)の合成を抑制する。", "answer": "デオキシウリジン一リン酸(dUMP)"},
+        {"text": "ジヒドロ葉酸還元酵素はチミジル酸(TMP)合成に必須の酵素であり、【  】などの抗癌剤の良いターゲットとなっている。", "answer": "メトトレキサート(アミノプテリン)"},
+        {"text": "HPRT (HGPRT)の遺伝的欠失は【  】という疾患の要因となる。", "answer": "レッシュ・ナイハン症候群"}
+    ]
+    # 現在のテスト用リストに全問題をコピーしてシャッフル
+    st.session_state.questions = st.session_state.all_questions.copy()
+    random.shuffle(st.session_state.questions)
+    
+    st.session_state.current_q = 0
+    st.session_state.show_answer = False
+    st.session_state.review_list = [] # わからなかった問題を保存するリスト
+
+total = len(st.session_state.questions)
+current = st.session_state.current_q
+
+if current < total:
+    st.write(f"**【第{current + 1}問 / 全{total}問】**")
+    q = st.session_state.questions[current]
+    
+    # 問題文を表示
+    st.info(q["text"])
+
+    # まだ答えを見ていない場合
+    if not st.session_state.show_answer:
+        if st.button("答えを見る"):
+            st.session_state.show_answer = True
+            st.rerun()
+            
+    # 答えを見た後の表示
+    else:
+        st.success(f"**正解： {q['answer']}**")
+        
+        st.write("この問題、わかりましたか？")
+        # 横並びに2つのボタンを配置
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if st.button("⭕ わかった（次へ）", use_container_width=True):
+                st.session_state.current_q += 1
+                st.session_state.show_answer = False
+                st.rerun()
+                
+        with col2:
+            if st.button("❌ チェックして次へ", use_container_width=True):
+                # わからなかった問題をreview_listに追加
+                st.session_state.review_list.append(q)
+                st.session_state.current_q += 1
+                st.session_state.show_answer = False
+                st.rerun()
+
+# 全問終了後の画面
+else:
+    st.write("---")
+    st.subheader("すべての問題が終了しました！お疲れ様でした。")
+    
+    review_count = len(st.session_state.review_list)
+    
+    if review_count > 0:
+        st.warning(f"今回は **{review_count}問** の問題にチェックがつきました。")
+        
+        # チェックした問題の一覧をアコーディオン（折りたたみ）で表示
+        with st.expander("チェックした問題と解答を確認する"):
+            for i, rq in enumerate(st.session_state.review_list):
+                st.write(f"**{i+1}.** {rq['text']}  \n👉 **正解:** {rq['answer']}")
+                st.write("---")
+        
+        st.write(" ") # 少し余白を空ける
+        
+        # 復習モード開始ボタン
+        if st.button("💡 チェックした問題だけをやり直す"):
+            # review_listの問題だけをセットして再スタート
+            st.session_state.questions = st.session_state.review_list.copy()
+            random.shuffle(st.session_state.questions)
+            st.session_state.current_q = 0
+            st.session_state.show_answer = False
+            st.session_state.review_list = [] # 復習リストをリセット
+            st.rerun()
+            
+    else:
+        st.success("素晴らしい！全問完璧に「わかった」と回答しました！")
+
+    st.write("---")
+    # 完全リセットボタン（全54問から再スタート）
+    if st.button("🔄 最初から全問シャッフルしてやり直す"):
+        st.session_state.clear()
+        st.rerun()

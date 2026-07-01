@@ -78,6 +78,7 @@ if 'questions' not in st.session_state:
 total = len(st.session_state.questions)
 current = st.session_state.current_q
 
+# テスト進行中の画面
 if current < total:
     st.write(f"**【第{current + 1}問 / 全{total}問】**")
     q = st.session_state.questions[current]
@@ -113,6 +114,15 @@ if current < total:
                 st.session_state.show_answer = False
                 st.rerun()
 
+    # --- NEW: テスト途中でもチェックした問題を確認できる機能 ---
+    st.write("---")
+    review_count = len(st.session_state.review_list)
+    if review_count > 0:
+        with st.expander(f"⚠️ 今までにチェックした問題を確認する（現在 {review_count} 問）"):
+            for i, rq in enumerate(st.session_state.review_list):
+                st.write(f"**{i+1}.** {rq['text']}  \n👉 **正解:** {rq['answer']}")
+                st.write("---")
+
 # 全問終了後の画面
 else:
     st.write("---")
@@ -145,7 +155,7 @@ else:
         st.success("素晴らしい！全問完璧に「わかった」と回答しました！")
 
     st.write("---")
-    # 完全リセットボタン（全54問から再スタート）
+    # 完全リセットボタン（元の問題数から再スタート）
     if st.button("🔄 最初から全問シャッフルしてやり直す"):
         st.session_state.clear()
         st.rerun()

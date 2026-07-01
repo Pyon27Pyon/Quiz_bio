@@ -1,12 +1,12 @@
 import streamlit as st
 import random
 
-st.title("生化学 ランダム単語帳テスト (全54問)")
+st.title("生化学 ランダム単語帳テスト")
 
 # セッション状態の初期化
 if 'questions' not in st.session_state:
-    # 54問の問題データ（入力判定が不要なため、解答はシンプルに1つだけ表示します）
-    st.session_state.questions = [
+    # 54問の問題データ
+    st.session_state.all_questions = [
         # --- セクション1 ---
         {"text": "アミノ酸からケトグルタル酸へαアミノ基を転移する酵素を【  】と呼ぶ。", "answer": "アミノ基転移酵素"},
         {"text": "窒素が筋肉から肝臓へ輸送される際は、窒素が【  】やグルタミンに組み込まれた形で行われる。", "answer": "アラニン"},
@@ -63,44 +63,4 @@ if 'questions' not in st.session_state:
         {"text": "グリシン、グルタミンおよび【  】の3つのアミノ酸がプリン塩基の環構造の材料となる。", "answer": "アスパラギン酸"},
         {"text": "【  】の de novo 合成では塩基が合成されたのちにリボースと結合する。", "answer": "ピリミジン"},
         {"text": "HPRT (HGPRT)はグアニル酸(GMP)と【  】の合成を触媒する。", "answer": "イノシン酸(IMP)"},
-        {"text": "5-フルオロウラシルは体内で代謝され、その産物が【  】と拮抗することでチミジル酸(TMP)の合成を抑制する。", "answer": "デオキシウリジン一リン酸(dUMP)"},
-        {"text": "ジヒドロ葉酸還元酵素はチミジル酸(TMP)合成に必須の酵素であり、【  】などの抗癌剤の良いターゲットとなっている。", "answer": "メトトレキサート(アミノプテリン)"},
-        {"text": "HPRT (HGPRT)の遺伝的欠失は【  】という疾患の要因となる。", "answer": "レッシュ・ナイハン症候群"}
-    ]
-    random.shuffle(st.session_state.questions)
-    st.session_state.current_q = 0
-    st.session_state.show_answer = False # 「答えを見る」ボタンが押されたかどうかのフラグ
-
-total = len(st.session_state.questions)
-current = st.session_state.current_q
-
-if current < total:
-    st.write(f"**【第{current + 1}問 / 全{total}問】**")
-    q = st.session_state.questions[current]
-    
-    # 常に問題文を表示
-    st.info(q["text"])
-
-    # まだ答えを見ていない場合は「答えを見る」ボタンを表示
-    if not st.session_state.show_answer:
-        if st.button("答えを見る"):
-            st.session_state.show_answer = True
-            st.rerun()
-            
-    # 「答えを見る」が押された後の表示
-    else:
-        st.success(f"**正解： {q['answer']}**")
-        
-        if st.button("次の問題へ"):
-            st.session_state.current_q += 1
-            st.session_state.show_answer = False # 次の問題にいくときは答えを隠す
-            st.rerun()
-
-# 全問終了後の画面
-else:
-    st.write("---")
-    st.subheader("すべての問題が終了しました！お疲れ様でした。")
-    
-    if st.button("もう一度シャッフルしてやり直す"):
-        st.session_state.clear()
-        st.rerun()
+        {"text": "5-フルオロウラシルは体内で代謝され、その産物が【  】と拮抗することでチミジル酸(TMP)
